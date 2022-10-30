@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AccountController.class)
 class AccountControllerTest {
-
     @MockBean
     private AccountService accountService;
 
@@ -58,8 +57,7 @@ class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1L))
-                .andExpect(jsonPath("$.accountNumber").value("1234567890"))
-                ;
+                .andExpect(jsonPath("$.accountNumber").value("1234567890"));
 
     }
 
@@ -84,9 +82,38 @@ class AccountControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1L))
-                .andExpect(jsonPath("$.accountNumber").value("1234567890"))
-        ;
+                .andExpect(jsonPath("$.accountNumber").value("1234567890"));
 
     }
 
+    @Test
+    @DisplayName("계좌 확인 성공")
+    void successGetAccountsByUserId() throws Exception{
+        // given
+        List<AccountDto> accountDtos =
+                Arrays.asList(
+                        AccountDto.builder()
+                                .accountNumber("1234567890")
+                                .balance(100L).build(),
+                        AccountDto.builder()
+                                .accountNumber("1234567891")
+                                .balance(200L).build(),
+                        AccountDto.builder()
+                                .accountNumber("1234567892")
+                                .balance(300L).build());
+        given(accountService.getAccountsByUserId(anyLong()))
+                .willReturn(accountDtos);
+
+        // when
+        // then
+        mockMvc.perform(get("/account?user_id=1"))
+                .andDo(print())
+                .andExpect(jsonPath("$[0].accountNumber").value("1234567890"))
+                .andExpect(jsonPath("$[0].balance").value(100))
+                .andExpect(jsonPath("$[1].accountNumber").value("1234567891"))
+                .andExpect(jsonPath("$[1].balance").value(200))
+                .andExpect(jsonPath("$[2].accountNumber").value("1234567892"))
+                .andExpect(jsonPath("$[2].balance").value(300));
+
+    }
 }

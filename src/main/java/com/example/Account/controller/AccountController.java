@@ -1,16 +1,16 @@
 package com.example.Account.controller;
 
+import com.example.Account.dto.AccountInfo;
 import com.example.Account.dto.DeleteAccount;
 import com.example.Account.service.AccountService;
 import com.example.Account.dto.AccountDto;
 import com.example.Account.dto.CreateAccount;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,16 +25,33 @@ public class AccountController {
                 request.getUserId(),
                 request.getInitialBalance()
         ));
+
     }
 
     @DeleteMapping("/account")
     public DeleteAccount.Response deleteAccount(
             @RequestBody @Valid DeleteAccount.Request request
     ) {
-        AccountDto accountDto = accountService.deleteAccount(
+
+        return DeleteAccount.Response.from(accountService.deleteAccount(
                 request.getUserId(),
-                request.getAccountNumber());
-        return DeleteAccount.Response.from(accountDto);
+                request.getAccountNumber()));
+
     }
 
+    @GetMapping("/account")
+    public List<AccountInfo> getAccountsByUserId(
+            @RequestParam("user_id") Long userId
+    ) {
+
+        List<AccountDto> accountDtos = accountService.getAccountsByUserId(userId);
+
+        return accountDtos.stream().map(accountDto ->
+                        AccountInfo.builder()
+                                .accountNumber(accountDto.getAccountNumber())
+                                .balance(accountDto.getBalance())
+                                .build())
+                .collect(Collectors.toList());
+
+    }
 }

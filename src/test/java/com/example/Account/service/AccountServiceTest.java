@@ -17,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.Account.type.AccountStatus.*;
@@ -31,7 +33,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
-
     @Mock
     private AccountRepository accountRepository;
 
@@ -70,7 +71,7 @@ class AccountServiceTest {
 
     @Test
     @DisplayName("계좌 생성 실패 - 사용자 없는 경우")
-    void createAccount_UserNotFound() {
+    void createAccountFailed_UserNotFound() {
         // given
         given(accountUserRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -85,7 +86,7 @@ class AccountServiceTest {
 
     @Test
     @DisplayName("계좌 생성 실패 - 계좌가 이미 10개")
-    void createAccount_maxAccountIs10() {
+    void createAccountFailed_maxAccountIs10() {
         // given
         AccountUser accountUser = AccountUser.builder()
                 .id(1L).name("ryureeru").build();
@@ -131,7 +132,7 @@ class AccountServiceTest {
 
     @Test
     @DisplayName("계좌 해지 실패 - 사용자 없는 경우")
-    void deleteAccount_UserNotFound() {
+    void deleteAccountFailed_UserNotFound() {
         // given
         given(accountUserRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
@@ -147,7 +148,7 @@ class AccountServiceTest {
 
     @Test
     @DisplayName("계좌 해지 실패 - 계좌가 없는 경우")
-    void deleteAccount_AccountNotFound() {
+    void deleteAccountFailed_AccountNotFound() {
         // given
         AccountUser accountUser = AccountUser.builder()
                 .id(1L)
@@ -242,4 +243,61 @@ class AccountServiceTest {
         assertEquals(BALANCE_NOT_EMPTY, exception.getErrorCode());
     }
 
+    @Test
+    @DisplayName("계좌 조회 성공")
+    void getAccountsByUserIdSuccess() {
+        // given
+        AccountUser accountUser = AccountUser.builder()
+                .id(1L).name("ryureeru").build();
+        List<Account> accounts = Arrays.asList(
+                Account.builder()
+                        .accountUser(accountUser)
+                        .accountNumber("1111111111")
+                        .balance(100L)
+                        .build(),
+                Account.builder()
+                        .accountUser(accountUser)
+                        .accountNumber("1111111112")
+                        .balance(200L)
+                        .build(),
+                Account.builder()
+                        .accountUser(accountUser)
+                        .accountNumber("1111111113")
+                        .balance(300L)
+                        .build()
+        );
+        given(accountUserRepository.findById(anyLong()))
+                .willReturn(Optional.of(accountUser));
+        given(accountRepository.findByAccountUser(any()))
+                .willReturn(accounts);
+
+        //when
+        List<AccountDto> accountDtos = accountService.getAccountsByUserId(12L);
+
+        //then
+        assertEquals(3, accountDtos.size());
+        assertEquals("1111111111", accountDtos.get(0).getAccountNumber());
+        assertEquals(100, accountDtos.get(0).getBalance());
+        assertEquals("1111111112", accountDtos.get(1).getAccountNumber());
+        assertEquals(200, accountDtos.get(1).getBalance());
+        assertEquals("1111111113", accountDtos.get(2).getAccountNumber());
+        assertEquals(300, accountDtos.get(2).getBalance());
+
+    }
+
+    @Test
+    @DisplayName("계좌 조회 실패 - 사용자 없는 경우")
+    void accountsByUserIdFailed_UserNotFound() {
+        // given
+        given(accountUserRepository.findById(anyLong()))
+                .willReturn(Optional.empty());
+
+        // when
+        AccountException exception = assertThrows(AccountException.class,
+                () -> accountService.getAccountsByUserId(1L));
+
+        // then
+        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+
+    }
 }

@@ -16,7 +16,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.example.Account.type.AccountStatus.*;
 import static com.example.Account.type.ErrorCode.*;
@@ -55,6 +58,7 @@ public class AccountService {
         );
 
         return AccountDto.fromEntity(account);
+
     }
 
     @Transactional
@@ -76,7 +80,6 @@ public class AccountService {
 
         return AccountDto.fromEntity(account);
 
-
     }
 
     private static void validateDeleteAccount(AccountUser accountUser, Account account) {
@@ -94,5 +97,20 @@ public class AccountService {
         if (account.getBalance() > 0) {
             throw new AccountException(BALANCE_NOT_EMPTY);
         }
+
+    }
+
+    @Transactional
+    public List<AccountDto> getAccountsByUserId(Long userId) {
+        // 사용자 없는 경우
+        AccountUser accountUser = accountUserRepository.findById(userId)
+                .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
+
+        List<Account> accounts = accountRepository
+                .findByAccountUser(accountUser);
+
+        return accounts.stream().map(AccountDto::fromEntity)
+                .collect(Collectors.toList());
+
     }
 }
