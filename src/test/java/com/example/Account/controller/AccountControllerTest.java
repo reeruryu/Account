@@ -2,6 +2,7 @@ package com.example.Account.controller;
 
 import com.example.Account.dto.AccountDto;
 import com.example.Account.dto.CreateAccount;
+import com.example.Account.dto.DeleteAccount;
 import com.example.Account.service.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -59,6 +60,32 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.userId").value(1L))
                 .andExpect(jsonPath("$.accountNumber").value("1234567890"))
                 ;
+
+    }
+
+    @Test
+    @DisplayName("계좌 해지 성공")
+    void successDeleteAccount() throws Exception {
+        // given
+        given(accountService.deleteAccount(anyLong(), anyString()))
+                .willReturn(AccountDto.builder()
+                        .userId(1L)
+                        .accountNumber("1234567890")
+                        .registeredAt(LocalDateTime.now())
+                        .unRegisteredAt(LocalDateTime.now())
+                        .build());
+        // when
+        // then
+        mockMvc.perform(delete("/account")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new DeleteAccount.Request(12L, "1111111111")
+                        )))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(1L))
+                .andExpect(jsonPath("$.accountNumber").value("1234567890"))
+        ;
 
     }
 
