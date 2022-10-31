@@ -6,7 +6,6 @@ import com.example.Account.dto.AccountDto;
 import com.example.Account.exception.AccountException;
 import com.example.Account.repository.AccountRepository;
 import com.example.Account.repository.AccountUserRepository;
-import com.example.Account.type.AccountStatus;
 import com.example.Account.type.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -192,6 +190,7 @@ class AccountServiceTest {
 
         // then
         assertEquals(USER_ACCOUNT_UNMATCH, exception.getErrorCode());
+
     }
 
     @Test
@@ -241,6 +240,7 @@ class AccountServiceTest {
 
         // then
         assertEquals(BALANCE_NOT_EMPTY, exception.getErrorCode());
+
     }
 
     @Test

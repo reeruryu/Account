@@ -1,7 +1,7 @@
-package com.example.account.dto;
+package com.example.Account.dto;
 
-import com.example.account.type.TransactionResultType;
-import com.example.account.type.TransactionType;
+import com.example.Account.type.TransactionResult;
+import com.example.Account.type.TransactionType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class QueryTransactionResponse {
     private String accountNumber;
     private TransactionType transactionType;
-    private TransactionResultType transactionResult;
+    private TransactionResult transactionResult;
     private String transactionId;
     private Long amount;
     private LocalDateTime transactedAt;
@@ -23,7 +23,7 @@ public class QueryTransactionResponse {
         return QueryTransactionResponse.builder()
                 .accountNumber(transactionDto.getAccountNumber())
                 .transactionType(transactionDto.getTransactionType())
-                .transactionResult(transactionDto.getTransactionResultType())
+                .transactionResult(transactionDto.getTransactionResult())
                 .transactionId(transactionDto.getTransactionId())
                 .amount(transactionDto.getAmount())
                 .transactedAt(transactionDto.getTransactedAt())

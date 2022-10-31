@@ -1,5 +1,5 @@
 package com.example.Account.type;
 
-public enum TransactionResultType {
+public enum TransactionResult {
     S, F
 }

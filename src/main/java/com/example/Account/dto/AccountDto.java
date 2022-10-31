@@ -28,7 +28,7 @@ public class AccountDto {
                 .accountNumber(account.getAccountNumber())
                 .balance(account.getBalance())
                 .registeredAt(account.getRegisteredAt())
-                .unRegisteredAt(account.getUnRegistedAt())
+                .unRegisteredAt(account.getUnRegisteredAt())
                 .build();
 
     }

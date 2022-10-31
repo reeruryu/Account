@@ -74,7 +74,7 @@ public class AccountService {
         validateDeleteAccount(accountUser, account);
 
         account.setAccountStatus(UNREGISTERED);
-        account.setUnRegistedAt(LocalDateTime.now());
+        account.setUnRegisteredAt(LocalDateTime.now());
 
         accountRepository.save(account);
 
