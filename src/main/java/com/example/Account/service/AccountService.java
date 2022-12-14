@@ -60,6 +60,14 @@ public class AccountService {
         return AccountDto.fromEntity(account);
 
     }
+    
+    @Transactional
+    public Account getAccount(Long id) {
+        if (id < 0) {
+            throw new RuntimeException("Minus");
+        }
+        return accountRepository.findById(id).get();
+    }
 
     @Transactional
     public AccountDto deleteAccount(Long userId, String accountNumber) {
